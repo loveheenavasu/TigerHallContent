@@ -1,11 +1,14 @@
 import React from "react";
 import { Box, Input } from "@chakra-ui/react";
 import { GREY, TIGERHALL_TEAL } from "../../helpers/colors";
-import {debounce} from 'lodash';
+import {debounce} from '../../helpers/common-methods';
 
 const SearchBar = (props) => {
   const {onChange,setIsLoading} = props;
-  const debounceSearchValue = debounce(value => onChange(value),300);
+
+  const searchChange = debounce((value) => {
+    onChange(value);
+  },300)
 
   return (
     <>
@@ -17,8 +20,8 @@ const SearchBar = (props) => {
           p="0px 8px"
           h="29px"
           onChange={e => {
-            setIsLoading(true)
-            debounceSearchValue(e.target.value);
+            setIsLoading(true);
+            searchChange(e.target.value);
           }}
           fontSize="14px"
           color={GREY}
