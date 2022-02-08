@@ -4,73 +4,10 @@ import ContentCard from "../card/ContentCard";
 import SearchBar from "../search/SearchBar";
 import { DARK_TEAL, WHITE } from "../../helpers/colors";
 import ContentCardSkeleton from "../../components/card/ContentCardSkeleton";
+import useTigerHall from "../../hooks/useTigerHall";
 
 const TigerHall = (props) => {
-  const [searchValue, setSearchvalue] = useState("");
-  const [contentData, setContentData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetch("https://api.staging.tigerhall.io/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: `
-      {
-        contentCards(filter: {limit: 20, keywords: "", types: [PODCAST]}) {
-          edges {
-            ... on Podcast {
-              name
-              image {
-                ...Image
-              }
-              categories {
-                ...Category
-              }
-              experts {
-                ...Expert
-              }
-            }
-          }
-        }
-      }
-      fragment Image on Image {
-        uri
-      }
-      fragment Category on Category {
-        name
-      }
-      fragment Expert on Expert {
-        firstName
-        lastName
-        title
-        company
-      }
-        `,
-      }),
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        setContentData(result.data.contentCards.edges || []);
-        setIsLoading(false);
-      })
-      .catch((e) => {
-        console.error(e);
-        setIsLoading(false);
-      });
-  }, []);
-
-  const filteredCards = useMemo(
-    () =>
-      contentData.filter((item) =>
-        item.name.toLowerCase().includes(searchValue.toLowerCase())
-      ),
-    [searchValue, contentData]
-  );
-
+  const {isLoading,setIsLoading, filteredCards,setSearchvalue} = useTigerHall();
 
   return (
     <>
@@ -101,7 +38,7 @@ const TigerHall = (props) => {
             {isLoading &&
               Array(10)
                 .fill("dummy")
-                .map(() => <ContentCardSkeleton />)}
+                .map((_,index) => <ContentCardSkeleton key={index}/>)}
           </VStack>
         </VStack>
       </main>

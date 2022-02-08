@@ -3,7 +3,6 @@ import { Skeleton,Box,VStack, SkeletonText } from '@chakra-ui/react'
 import React from "react";
 import {WHITE} from '../../helpers/colors';
 
-
 const ContentCardSkeleton = (props) => {
   return (
     <>

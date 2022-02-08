@@ -1,5 +1,5 @@
+import React, { useMemo } from "react";
 import { VStack, Image, Box, Text } from "@chakra-ui/react";
-import React from "react";
 import {
   WHITE,
   TIGERHALL_ORANGE,
@@ -7,9 +7,38 @@ import {
   LIGHT_BLACK,
 } from "../../helpers/colors";
 
-const ContentCard = (props) => {
-  const { cardData } = props;
-  const imageUrl = cardData.image.uri.substring(0, 32) + '/resize/276x' + cardData.image.uri.substring(32, cardData.image.uri.length)
+const ContentCard = ({ cardData }) => {
+  const {
+    image: { uri },
+    experts,
+    categories
+  } = cardData || {};
+
+  const imageUrl = useMemo(
+    () => uri.substring(0, 32) + "/resize/276x" + uri.substring(32, uri.length),
+    [uri]
+  );
+
+  const categoriesName = useMemo(() => categories.reduce((initValue,category,index) => {
+    return index === 0 ? initValue + category.name : initValue + ', ' + category.name;
+  },''), [categories])
+
+  const renderExpertsData = () => {
+    return (experts || []).map((expert, index) => (
+      <VStack spacing="4px" key={index} pt="8px" alignItems="flex-start">
+        <Text color={LIGHT_BLACK} fontSize="14px" fontWeight="600">
+          {`${expert.firstName} ${expert.lastName}`}
+        </Text>
+        <Text color={LIGHT_BLACK} fontSize="14px" fontWeight="600">
+          {expert.title}
+        </Text>
+        <Text color={TIGERHALL_ORANGE} fontSize="14px" fontWeight="600">
+          {expert.company}
+        </Text>
+      </VStack>
+    ));
+  };
+
 
   return (
     <>
@@ -22,9 +51,9 @@ const ContentCard = (props) => {
         >
           <Image
             src={imageUrl}
-            alt={'No image'}
+            alt={"No image"}
             w="100%"
-            h="130px"   
+            h="130px"
             objectFit="cover"
           />
           <VStack
@@ -35,32 +64,12 @@ const ContentCard = (props) => {
             pb="32px"
           >
             <Text color={TIGERHALL_ORANGE} fontSize="12px" fontWeight="700">
-              {cardData.categories[0].name}
+              {categoriesName}
             </Text>
             <Text color={BLACK} fontSize="18px" fontWeight="700">
               {cardData.name || ""}
             </Text>
-            {Array.isArray(cardData.experts) &&
-              cardData.experts.length > 0 &&
-              cardData.experts.map((expert, index) => {
-                return (
-                  <VStack spacing="4px" key={index} pt="8px" alignItems="flex-start" >
-                    <Text color={LIGHT_BLACK} fontSize="14px" fontWeight="600">
-                      {`${expert.firstName} ${expert.lastName}`}
-                    </Text>
-                    <Text color={LIGHT_BLACK} fontSize="14px" fontWeight="600">
-                      {expert.title}
-                    </Text>
-                    <Text
-                      color={TIGERHALL_ORANGE}
-                      fontSize="14px"
-                      fontWeight="600"
-                    >
-                      {expert.company}
-                    </Text>
-                  </VStack>
-                );
-              })}
+            {renderExpertsData()}
           </VStack>
         </VStack>
       </Box>
